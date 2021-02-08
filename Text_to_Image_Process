@@ -33,7 +33,12 @@ https://jjeaby.medium.com/nvml-driver-library-version-mismatch-%EB%AC%B8%EC%A0%9
 -> 알고리즘을 보니, dataset 을 load 할때 embadding_train, embedding_test 를 char-CNN-RNN 에서 load 하는 것으로 보아,
    char-CNN-RNN 에는 이미지 파일과 그에 대응하는 텍스트 임베딩 결과에 대한 정보를 포함 하는 듯 보임 
 -> 결론 : char-CNN-RNN 인코더는 새 이미지를 그에 대한 묘사를 입력으로 받아서 1024차원으로 된 텍스트 임베딩으로 매칭한다.
-	  이때, char-CNN-RNN 데이터는 각각의 새 이미지의 index 에 대응하는 index 에 (1024,) 크기의 텍스트 임베딩이 배열이다 		->> ((1024,), (1024,), ... , (1024,)) 와 같은꼴. 그러므로, (data 갯수, 1024) 의 행렬 텐서 
+	  이때, char-CNN-RNN 데이터는 각각의 새 이미지의 index 에 대응하는 index 에 (1024,) 크기의 텍스트 임베딩이 배열이다 		->> ((1024,), (1024,), ... , (1024,)) 와 같은꼴. 그러므로, (data 갯수, 1024) 의 행렬 텐서
+
+3. CelebA 'list_attr_celeba.csv' 에는 각 이미지당 속성 40개가 yes or no 로 할당 되어있음
+ -> 이 (image 갯수, 40) 짜리 data 를 text_embedding 대신 넣는다면?
+ -> 혹은 이 데이터를 char-CNN-RNN 텍스트 인코더에 입력으로 넣어서 동일한 크기의 출력을 낸다면?
+ -> 각 이미지에 같은 인덱스에 텍스트에 관한 데이터를 존재하게 하고 알고리즘에 넣으면 되기 때문에, 텍스트에 관한 데이터를 어떻게 	처리 할 것인지만 고민
 
 page. 184 의 load_embeddings 를 해석하고
 page. 186 의 load_dataset 을 해석해야 함
