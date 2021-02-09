@@ -1,0 +1,39 @@
+https://github.com/tensorflow/models/tree/master/research#computer-vision
+https://github.com/ox-vgg/vgg_face2
+http://blog.naver.com/PostView.nhn?blogId=laonple&logNo=221622517409
+
+https://bcho.tistory.com/1176
+https://www.google.com/search?q=FaceNet+%EC%82%AC%EC%9A%A9%EB%B2%95&sa=X&ved=2ahUKEwiP2Yn568fuAhXVFogKHQblCI0Q1QIoA3oECAcQBA&biw=2493&bih=1309
+https://twinw.tistory.com/199
+https://east-rain.github.io/docs/Deep%20Learning/tensorflow%20tutorial/image_transfer_learning_preTrained.html
+https://github.com/gilbutITbook/006975/blob/master/5.2-using-convnets-with-small-datasets.ipynb
+https://medium.com/@aimap.marker/%EC%83%81%EC%9C%84-6%EA%B0%80%EC%A7%80-%EC%BB%B4%ED%93%A8%ED%84%B0-%EB%B9%84%EC%A0%84-cloud-api%EC%9D%98-%EB%B9%84%EA%B5%90-46aace7d2422
+https://sulastri.tistory.com/1
+http://blog.naver.com/PostView.nhn?blogId=cosmosjs&logNo=220934659282&categoryNo=0&parentCategoryNo=56
+https://jjeaby.medium.com/nvml-driver-library-version-mismatch-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0-e84047a30a8c
+
+1. stackGAN 훈련 이미지 만들기 : 사람 얼굴 이미지 데이터에서 각 이미지의 속성값 추출 -> 얼굴 속성값을 분류하여 텍스트로 적는 알고리즘 구현 혹은 있는지 찾아보기
+
+== 일단 stackGAN 한번 돌려보기 ==
+* stage-I stackGAN 을 훈련시키고 나서 stage-II stackGAN 을 훈련시키는 걸까 아니면 동시에 훈련 시키는 걸까?
+-> 각 stage 의 훈련마다 epoch 가 있는것으로 보아 전자가 맞는듯
+* 새 이미지는 크로핑이 안되어 있기 때문에 바운딩 박스 값으로 크로핑 하는 코드가 필요하지만,
+  사람 이미지는 이미 크로핑 되어있기 때문에 해당 코드와 바운딩 박스 입력값을 없애고 이미지 크기만 지정한 사이즈로 바꾸어주면 됨
+* 마찬가지로 load_bounding_boxes 함수도 필요치 않음				
+
+2. stackGAN 에 텍스트 인코더 신경망으로 사용 : 사람용 텍스트 인코더 신경망 훈련 -> 사람 얼굴 특징을 가지고 텍스트 임베딩이 된 것이 있는지 찾아보기
+* LSTM, GRU 공부하고 test2image 에서 임베딩을 어떻게 했는지와, 임베딩에 사용한 이미지/텍스트 데이터가 내 데이터와 맞는 형식인지 확인
+* CUB 이미지 데이터셋에 각 새의 속성이 어떠한지에 관한 데이터가 포함 되어 있나?
+-> 되어있다면 char-RNN-CNN 텍스트 임베딩은 각 이미지 데이터 파일 '이름' 에 대해 해당 데이터가 갖는 텍스트를 입력으로 넣으면,
+   출력으로 해당 데이터의 파일 '이름' 을 분류하여 출력하나?
+-> 아니, 그러면 안되지, 텍스트 임베딩의 출력은 '입력된 문장의 단어 기반 임베딩' 이어야 한다.
+-> 그럼 char-RNN-CNN 의 입력은 '문장' 이고 출력은 '임베딩' 이어야 한다. 이때, 입력으로 들어가는 문장은 '새의 외관 설명' 에 
+   대한 문장 이어야 한다.
+-> 그럼 애초에, dis 를 훈련할때 실제 이미지에 대응하는 텍스트 입력도 입력이 되어야하지 않나?
+-> 알고리즘을 보니, dataset 을 load 할때 embadding_train, embedding_test 를 char-CNN-RNN 에서 load 하는 것으로 보아,
+   char-CNN-RNN 에는 이미지 파일과 그에 대응하는 텍스트 임베딩 결과에 대한 정보를 포함 하는 듯 보임 
+-> 결론 : char-CNN-RNN 인코더는 새 이미지를 그에 대한 묘사를 입력으로 받아서 1024차원으로 된 텍스트 임베딩으로 매칭한다.
+	  이때, char-CNN-RNN 데이터는 각각의 새 이미지의 index 에 대응하는 index 에 (1024,) 크기의 텍스트 임베딩이 배열이다 		->> ((1024,), (1024,), ... , (1024,)) 와 같은꼴. 그러므로, (data 갯수, 1024) 의 행렬 텐서 
+
+page. 184 의 load_embeddings 를 해석하고
+page. 186 의 load_dataset 을 해석해야 함

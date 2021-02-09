@@ -1,0 +1,123 @@
+1. anaconda3 : python 
+https://greedywyatt.tistory.com/107
+
+다운로드: https://repo.anaconda.com/archive/
+
+bash 파일.sh
+
+conda init 할지 여부.. 선택
+
+# init 하기
+conda init bash
+
+init 안 했으면 conda 위치를 bashrc에 추가
+
+# 부팅 시 init 안 하려면
+conda config --set auto_activate_base false
+
+
+# 가상 환경 생성
+ conda create --name python38 python=3.8 (tensorflow 2.2 이하의 경우, 2.3 이상은 Python 3.8)
+
+conda info --envs 
+
+source activate python38
+
+# Conda 환경에서 노트북 설치
+
+conda install jupyter
+
+conda install notebook
+
+# 노트북 실행
+
+jupyter notebook
+
+# 로드 한 환경 내릴 때 (해당 터미널에서)
+
+conda deactivate
+
+# conda environment 삭제 하기
+conda env remove -n python38f
+
+
+2. 우분투 18.04.5 한글 설정
+ibus는 크롬에서 한글 변환이 잘 안된다.
+## fcitx-hangul 설치
+https://driz2le.tistory.com/253
+sudo apt-get update
+sudo apt-get install fcitx-hangul
+환경설정 메뉴에서
+settings -> Region&Language -> Manage Installed Languages -> 설치
+Manage Installed Languages -> 키보드입력기 -> fcitx 변경
+재부팅
+우분투 우측 상단바의 키보드 아이콘 -> 설정
+전역설정 -> 입력기 전환 -> 한글키로 설정
+
+
+3. Google Colaboratory 에서 로컬 런타임 연동하기
+jupyter notebook \
+  --NotebookApp.allow_origin='https://colab.research.google.com' \
+  --port=8888 \
+  --NotebookApp.token='12345' --NotebookApp.password='12345' \
+  --NotebookApp.disable_check_xsrf=True \
+  --NotebookApp.port_retries=0
+
+
+4. Jupyter notebook setting
+
+# Default 설정 파일 생성
+jupyter notebook --generate-config
+
+# 설정 변경하기...
+- 기본 설정 하에서는 다음과 같은 메시지가 뜬다
+IOPub message rate exceeded.
+    The notebook server will temporarily stop sending output
+    to the client in order to avoid crashing it.
+    To change this limit, set the config variable
+    `--NotebookApp.iopub_msg_rate_limit`.
+    
+    Current values:
+    NotebookApp.iopub_msg_rate_limit=1000.0 (msgs/sec)
+    NotebookApp.rate_limit_window=3.0 (secs)
+
+# 다음과 같이 변경
+c.NotebookApp.iopub_data_rate_limit = 10000000
+c.NotebookApp.iopub_msg_rate_limit = 10000000
+
+
+# Jupyter notebook 원격 접속
+
+ipython
+from notebook.auth import passwd
+passwd()
+Enter password: 12345
+Verify password: 12345
+Out: 'argon2:$argon2id$v=19$m=10240,t=10,p=8$yMv4ZgxAWGEuiy8wGLVK3w$TTz5s7IdyxPKvQ9X6v3xwA'
+cd ~/.jupyter
+vi jupyter_notebook_config.py
+# 모든 ip 허용
+c.NotebookApp.ip = '0.0.0.0'
+# Notebook의 root dir
+c.NotebookApp.notebook_dir = '/home/csle/Documents/'
+
+c.NotebookApp.open_browser = False
+c.NotebookApp.password = '이곳에 복사해 둔 SHA1 또는 Aragon2 Hash 입력'
+c.NotebookApp.password_required = True
+c.NotebookApp.port = 8888
+
+# anaconda3 tensorflow installation
+http://hansworld.co.kr/AII/1038
+
+https://www.tensorflow.org/install?hl=ko
+https://www.tensorflow.org/install/gpu?hl=ko
+
+# ETC.
+
+https://deeplearningzerotoall.github.io/season2/
+
+
+'sha1:e3d187b04a1d:07634260c54dd1f5091187f1ed427b4ac5a3c6f1'
+
+
+
