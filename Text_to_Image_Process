@@ -45,5 +45,30 @@ https://jjeaby.medium.com/nvml-driver-library-version-mismatch-%EB%AC%B8%EC%A0%9
     .pickle 로 test, train 폴더에 저장 
  -> filenames.pickle 파일에 파일이름이 랜덤하게 섞여 있으므로 이 index 를 그대로 가져와야 함
 
-page. 184 의 load_embeddings 를 해석하고
-page. 186 의 load_dataset 을 해석해야 함
+5. load_dataset 함수에서 all_embeddings 를 속성값으로 바꾸어줌
+
+6. gen 에는 (40,) 의 속성값을 그대로 입력하지만,
+   dis 에서는 CNN 의 결과와 concatenate 해야 하므로 (4,4,:) 을 맞추기 위해 compressor 네트워크 사용
+   (4, 4, 128) 로 확장 함
+
+7. 마찬가지로 build_adversarial_model 에서도 input_layer3 = Input(shape=(4,4,128)) 으로 바꿈
+
+8. generator, adversarial 네트워크에서 z_noise (100,) 의 입력은 필요없음 
+ -> 우리는 여기에 (40,) 을 그대로 넣기 때문에
+ -> 마찬가지로 z_noise2 도 필요 없음
+
+9. 아래 코드를 코드 가장 위에 써 주고 'with tf.device('/gpu:0'):' 로 gpu 를 사용 해 주어야 cudnn 오류가 없다.
+ -> 케라스가 gpu 메모리를 거의 전부 할당해서 생기는 문제 (참고 : https://www.tensorflow.org/guide/gpu?hl=ko)
+
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    try:
+        # Currently, memory growth needs to be the same across GPUs
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+        logical_gpus = tf.config.experimental.list_logical_devices('GPU')
+        print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+    except RuntimeError as e:
+        # Memory growth must be set before GPUs have been initialized
+        print(e)
+
