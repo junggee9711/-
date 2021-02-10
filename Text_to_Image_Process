@@ -40,5 +40,10 @@ https://jjeaby.medium.com/nvml-driver-library-version-mismatch-%EB%AC%B8%EC%A0%9
  -> 혹은 이 데이터를 char-CNN-RNN 텍스트 인코더에 입력으로 넣어서 동일한 크기의 출력을 낸다면?
  -> 각 이미지에 같은 인덱스에 텍스트에 관한 데이터를 존재하게 하고 알고리즘에 넣으면 되기 때문에, 텍스트에 관한 데이터를 어떻게 	처리 할 것인지만 고민
 
+4. 얼굴 데이터 셋의 속성값 40 개의 yes/no 데이터를 텍스트 임베딩 자리에 바꿔서 넣는 코드를 만듬
+ -> 그 전에 얼굴 데이터 셋 속성값 40개를 각 이미지의 index 에 맞추어 yes/no 의 list (이미지데이터 갯수, 40) 로 만들어
+    .pickle 로 test, train 폴더에 저장 
+ -> filenames.pickle 파일에 파일이름이 랜덤하게 섞여 있으므로 이 index 를 그대로 가져와야 함
+
 page. 184 의 load_embeddings 를 해석하고
 page. 186 의 load_dataset 을 해석해야 함
