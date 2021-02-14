@@ -72,3 +72,5 @@ if gpus:
         # Memory growth must be set before GPUs have been initialized
         print(e)
 
+10. tensorboard 관련 코드는 전부 주석 처리 함
+
