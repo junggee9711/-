@@ -1,0 +1,2 @@
+model_checkpoint_path: "stage1_dis.h5_epoch_500"
+all_model_checkpoint_paths: "stage1_dis.h5_epoch_500"
