@@ -1,0 +1,7 @@
+1. CelebA 이미지 데이터 2만개를 사용하던것을 20만개를 사용 하여 훈련 함
+
+2. build_embedding_comporessor_model 의 출력 레이어를 128에서 10으로 바꾸고, condition_dim 도 10으로 바꿈
+3. build_stage1_discriminator 의 input_layer2 도 (4,4,10) 으로 바꿈
+4. build_adversarial_model 의 input_layer3 도 (4,4,10) 으로 바꿈
+    
+---> compressor 가 (40,) 의 입력을 받고 (10,) 의 출력을 내도록 바꾼 후 dis 에 넣음

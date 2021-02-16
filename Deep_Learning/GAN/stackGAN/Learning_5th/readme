@@ -1,0 +1,33 @@
+1. CA 에 있던 random 성을 더함
+ -> 한정적인 데이터가 고차원의 얼굴 속성값 공간에서 불연속성을 야기하는 문제점 해결
+ -> z_dim = 10 으로 바꾸고 generator 안에 있는 CA 의 출력을 (10,) 로 바꾸어 이 둘을 concatenation 하여 (20,) 을 gen 입력으로 넣음
+ -> build_adversarial_model 에 input_layer2 = Input(shape=(10,)) 을 만들어 넣고, 모든 gen 의 입력과 출력 갯수를 수정함
+     (출력에 mean_logsigma 넣음)
+ 
+ def build_adversarial_model(gen_model, dis_model):
+    input_layer = Input(shape=(40,))
+    input_layer2 = Input(shape=(10,))
+    input_layer3 = Input(shape=(4, 4, 128))
+
+    x, mean_logsigma = gen_model([input_layer, input_layer2])
+
+    dis_model.trainable = False
+    valid = dis_model([x, input_layer3])
+
+    model = Model(inputs=[input_layer, input_layer2, input_layer3], outputs=[valid, mean_logsigma])
+    return model
+
+ -> generate_c 의 입력이 (256,) 에서 (10,) 으로 바뀌었으므로 이에 맞게 mean, log_sigma 값을 바꾸어줌
+ 
+ def generate_c(x):
+    mean = x[:, :5]
+    log_sigma = x[:, 5:]
+    stddev = K.exp(log_sigma)
+    epsilon = K.random_normal(shape=K.constant((mean.shape[1],), dtype='int32'))
+    c = stddev * epsilon + mean
+    return c
+ 
+ -> fake_images, _ = stage1_gen.predict([embedding_batch, z_noise], verbose=3)
+    fake_images, _ = stage1_gen.predict_on_batch([embedding_batch, z_noise2])
+    
+                 \___>  '_' 를 넣음

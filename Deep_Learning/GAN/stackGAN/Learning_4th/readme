@@ -1,0 +1,27 @@
+1. bounding box 데이터 셋으로 원본 이미지에서 178 x 218 로 이미 Cropped 한 결과가 CelebA 데이터 셋인것 같다.,
+ -> bounding box 로 크롭 하는 부분을 삭제하였다.
+ 
+2. learning rate (lr) 을 0.00008에서 0.0002 로 원래대로 바꿈
+
+3. 아래 코드로 
+"원하는 gpu에 어느 비율의 메모리를 할당할지 먼저 결정하는 것으로, 
+    프로세스가 어느정도의 메모리를 사용할지 알고 있다면, 작업 전에 미리 지정하여 메모리를 아낄 수 있다."
+출처: https://datamasters.co.kr/33 [데이터마스터] 
+
+import tensorflow as tf 
+
+config = tf.compat.v1.ConfigProto() 
+config.gpu_options.per_process_gpu_memory_fraction = 0.6 
+session = tf.compat.v1.Session(config=config)
+
+4. batch_size = 128 로 바꿈
+
+5. with tf.device('/gpu:0'):
+ -> 이 문장은 gpu 가 여러개가 아닌이상 keras 가 자동으로 gpu 에 메모리를 할당하므로 주석처리 함
+ 
+ 
+ 
+6. build_embedding_comporessor_model 의 출력 레이어를 128에서 10으로 바꾸고, condition_dim 도 10으로 바꿈
+7. build_stage1_discriminator 의 input_layer2 도 (4,4,10) 으로 바꿈
+8. build_adversarial_model 의 input_layer3 도 (4,4,10) 으로 바꿈
+    -> compressor 가 (40,) 의 입력을 받고 (10,) 의 출력을 내도록 바꾼 후 dis 에 넣음
