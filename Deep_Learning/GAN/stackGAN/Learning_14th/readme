@@ -1,0 +1,57 @@
+1. 13th 에서 Mode Collapse(비슷한 이미지 반복) 발생
+ --> discriminator 에 Dropout(0.25) 적용
+ 
+ def build_stage1_discriminator():
+    """
+    Create a model which takes two inputs
+    1. One from above network
+    2. One from the embedding layer
+    3. Concatenate along the axis dimension and feed it to the last module which produces final logits
+    """
+    input_layer = Input(shape=(64, 64, 3))
+
+    x = Conv2D(64, (4, 4),
+               padding='same', strides=2,
+               input_shape=(64, 64, 3), use_bias=False)(input_layer)
+    x = LeakyReLU(alpha=0.2)(x)
+    x = Dropout(0.25)(x)
+    
+    x = Conv2D(128, (4, 4), padding='same', strides=2, use_bias=False)(x)
+    x = BatchNormalization()(x)
+    x = LeakyReLU(alpha=0.2)(x)
+    x = Dropout(0.25)(x)
+
+    x = Conv2D(256, (4, 4), padding='same', strides=2, use_bias=False)(x)
+    x = BatchNormalization()(x)
+    x = LeakyReLU(alpha=0.2)(x)
+    x = Dropout(0.25)(x)
+
+    x = Conv2D(512, (4, 4), padding='same', strides=2, use_bias=False)(x)
+    x = BatchNormalization()(x)
+    x = LeakyReLU(alpha=0.2)(x)
+    x = Dropout(0.25)(x)
+
+    '''
+    실제 이미지에 해당하는 압축된 임베딩을 입력
+    '''
+    input_layer2 = Input(shape=(4, 4, 10))
+
+    '''
+    입력 이미지와 압축 텍스트 임베딩을 합침
+    '''
+    merged_input = concatenate([x, input_layer2])
+
+    x2 = Conv2D(64 * 8, kernel_size=1,
+                padding="same", strides=1)(merged_input)
+    x2 = BatchNormalization()(x2)
+    x2 = LeakyReLU(alpha=0.2)(x2)
+    x2 = Flatten()(x2)
+    x2 = Dense(1)(x2)
+    x2 = Activation('sigmoid')(x2)
+
+    stage1_dis = Model(inputs=[input_layer, input_layer2], outputs=[x2])
+    '''
+    출력은 입력 이미지가 진짜인지 가짜인지에 관한 확률(sigmoid)을 출력
+    '''
+    return stage1_dis
+

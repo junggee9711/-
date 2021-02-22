@@ -1,0 +1,8 @@
+1. gen 이 생성한 fake_images 는 정규화된 값이므로 이미지를 저장할때 비정규화 시켜야 함
+    if epoch % 2 == 0:
+        # z_noise2 = np.random.uniform(-1, 1, size=(batch_size, z_dim))
+        z_noise2 = np.random.normal(0, 1, size=(batch_size, z_dim))
+        embedding_batch = embeddings_test[0:batch_size]
+        fake_images, _ = stage1_gen.predict_on_batch(embedding_batch)
+        fake_images = fake_images*127.5 + 127.5 --> 추가
+       

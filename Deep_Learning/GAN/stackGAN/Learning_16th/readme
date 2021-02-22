@@ -1,0 +1,18 @@
+1. 20만 장으로 돌릴때 batch_size = 128 로 하면,
+    
+    def KL_loss(y_true, y_pred):
+        mean = y_pred[:, :128]
+        logsigma = y_pred[:, :128]
+        loss = -logsigma + .5 * (-1 + K.exp(2. * logsigma) + K.square(mean))
+        loss = K.mean(loss)
+        return loss
+        
+    에서 128 -> 256 으로 바꾸어 주어야한다.
+    왜?) adversarial_model.train_on_batch() 의 출력 값이 batch_size 만큼 입력으로 들어간 이미지들에 대한 예측 결과
+         y_pred 들의 평균을 가지고 계산하는 것이기 때문에
+
+
+2. fake_images, _ = stage1_gen.predict_on_batch(embedding_batch)
+   fake_images = (fake_images*127.5) + 127.5
+   fake_images = fake_images.astype('int') --> imshow() 에 실수가 아닌 정수값을 넣어야 하기 때문에 추가     
+
