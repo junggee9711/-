@@ -1,0 +1,20 @@
+< Idea >
+훈련시에 네트워크는 dis, gen, adversarial 이렇게 세개가 있고,
+먼저, dis 에 실제 이미지와 real_label 을 넣고 진짜를 판별하도록 훈련 한 후,
+             gen 이 생성한 fake 이미지와 fake_label 을 넣고 가짜를 판별하도록 훈련 한 후,
+             실제 이미지와 압축 텍스트 임베딩을 '어긋나게' 한 입력과 fake_label 을 넣어 훈련 한다.
+다음으로, adversarial 은 dis_model.trainable = False 로 dis 를 동결시키고 gen 의 가중치만 업데이트 한다.
+
+이때,
+
+1. 실제 이미지와 가짜 이미지를 concatenation 하여 label 과 매칭한 후 무작위로 섞은 입력을 dis 에 넣어 무작위성을 증가
+-> d_loss_real:1.124358057975769
+   d_loss_fake:1.69888480741065e-05
+   d_loss_wrong:0.3633098006248474
+   d_loss_wrong2:0.3633098006248474
+   에서 보면 dis 가 진짜를 진짜라고 판별하는 능력과 가짜를 가짜라고 판별하는 능력이 높지만,
+   섞여있을때 판별하는 능력이 낮으므로 이러한 시도가 타당해 보인다
+
+2. gen_model.trainable = False 로 하여 gen 을 동결시킨 adversarial 모델 훈련
+
+의 방법을 써보면 어떨까?

@@ -1,0 +1,20 @@
+< 모델을 compile 할때, output 의 갯수에 따라 compile 방법이 다름 >
+>>참고: 1. https://blog.ggaman.com/1011
+        2. https://keras.io/ko/getting-started/functional-api-guide/
+        3. https://datascience.stackexchange.com/questions/64637/difference-between-class-weight-and-loss-weights-in-keras
+
+stage1_dis = build_stage1_discriminator()
+stage1_dis.compile(loss='binary_crossentropy', optimizer=dis_optimizer)
+
+stage1_gen = build_stage1_generator()
+stage1_gen.compile(loss="mse", optimizer=gen_optimizer)
+
+embedding_compressor_model = build_embedding_compressor_model()
+embedding_compressor_model.compile(loss="binary_crossentropy", optimizer="adam")
+
+
+adversarial_model = build_adversarial_model(gen_model=stage1_gen, dis_model=stage1_dis)
+adversarial_model.compile(loss=['binary_crossentropy', KL_loss], loss_weights=[1, 2.0], optimizer=gen_optimizer, metrics=None)
+                         --> output 이 2개 이므로 각각의 output 에 대한 loss funtion 정보(loss)가 필요함(같게 해 줄수도 있음)
+                         --> 각각의 loss 값이 가중치(loss_weights) 를 줄 수도 있음
+                             예를들어, [1,0.3] 이면 1. * primary + 0.3 * auxiliary 가 최종 loss 로 출력됨

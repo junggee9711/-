@@ -1,0 +1,8 @@
+1. 7th 훈련 코드에,
+(compressor 통과, CA 를 통과 x, dis_loss_wrong2 으로 dis 를 한번 더 훈련 시킨 코드 [stage1_generator_lr = 0.0002, stage1_discriminator_lr = 0.0002 로 같음])
+   generator 의 첫 레이어에 x = Dropout(0.4)(x) 적용
+ -> 8th 에서 z_noise 와 compressor 를 없애고 얼굴 속성값 (40,) 을 그대로 넣는것은 좋지 않아보임
+ 
+2. 7th 에서 빼먹은
+   print("d_loss_wrong2:{}".format(dis_loss_wrong)) 를 넣고 
+   print("d_loss_wrong:{}".format(dis_loss_wrong)) 주석처리 제거

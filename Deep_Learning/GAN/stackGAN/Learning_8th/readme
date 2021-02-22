@@ -1,0 +1,75 @@
+1. 얼굴 속성값 (40,) 을 compressor 나 CA 통과 없이 그대로 넣고, z_noise 도 없앰
+
+--> < Comporessor >
+    '''
+    compressed_embedding = embedding_compressor_model.predict_on_batch(embedding_batch)
+    '''
+    compressed_embedding = np.reshape(embedding_batch, (-1, 1, 1, condition_dim))
+    compressed_embedding = np.tile(compressed_embedding, (1, 4, 4, 1))
+ -> build_stage1_discriminator 의 input_layer2 = Input(shape=(4,4,10) 에서 (4,4,40) 으로 바꿈
+ -> build_adversarial_model 의 input_layer3 = Input(shape=(4,4,10) 에서 (4,4,40) 으로 바꿈
+ -> condition_dim = 10 에서 40으로 바꿈
+ 
+--> < CA >        
+def build_stage1_generator():
+    """
+    Stage-I 의 generator 
+    *** 이 신경망 안에 CA 신경망과 생성기 신경망이 들어가 있다!!!! ***
+    그러므로, 입력으로 텍스트 임베딩 출력 (1024,)과 잡음 변수(100,) 을 받는다
+    """
+    '''
+    input_layer = Input(shape=(1024,))
+    x = Dense(256)(input_layer)
+    mean_logsigma = LeakyReLU(alpha=0.2)(x)
+
+    c = Lambda(generate_c)(mean_logsigma)
+
+    input_layer2 = Input(shape=(100,))
+    gen_input = Concatenate(axis=1)([c, input_layer2])
+    '''
+    # 텍스트 조건부 변수를 잡음 변수와 접합(concatenation) -> cGAN
+
+    input_layer = Input(shape=(40,))
+    x = Dense(128 * 8 * 4 * 4, use_bias=False)(input_layer)
+    x = ReLU()(x)
+
+    x = Reshape((4, 4, 128 * 8), input_shape=(128 * 8 * 4 * 4,))(x)
+
+    x = UpSampling2D(size=(2, 2))(x)
+    x = Conv2D(512, kernel_size=3, padding="same", strides=1, use_bias=False)(x)
+    x = BatchNormalization()(x)
+    x = ReLU()(x)
+
+    x = UpSampling2D(size=(2, 2))(x)
+    x = Conv2D(256, kernel_size=3, padding="same", strides=1, use_bias=False)(x)
+    x = BatchNormalization()(x)
+    x = ReLU()(x)
+
+    x = UpSampling2D(size=(2, 2))(x)
+    x = Conv2D(128, kernel_size=3, padding="same", strides=1, use_bias=False)(x)
+    x = BatchNormalization()(x)
+    x = ReLU()(x)
+
+    x = UpSampling2D(size=(2, 2))(x)
+    x = Conv2D(64, kernel_size=3, padding="same", strides=1, use_bias=False)(x)
+    x = BatchNormalization()(x)
+    x = ReLU()(x)
+
+    x = Conv2D(3, kernel_size=3, padding="same", strides=1, use_bias=False)(x)
+    x = Activation(activation='tanh')(x)
+
+    stage1_gen = Model(inputs=input_layer, outputs=x)
+    '''
+    stage - I gen 은 입력된 문장의 임베딩을 바탕으로 (+잡음 변수) 이미지를 생성 함 
+    '''
+    return stage1_gen
+
+2.  dis_loss_wrong2 = stage1_dis.train_on_batch([image_batch[:(batch_size - 2)], compressed_embedding[2:]],
+                                                   np.reshape(fake_labels[2:], (batch_size-2, 1))) 
+    --> 삭제
+    
+3. d_loss = 0.5 * np.add(dis_loss_real, 0.5 * np.add(dis_loss_wrong, dis_loss_fake))) 로 d_loss 를 바꾸고,
+   print("d_loss_wrong:{}".format(dis_loss_wrong)) 주석처리 해제
+
+4. stage1_generator_lr = 0.0002
+   stage1_discriminator_lr = 0.0002 로 같게 둠
