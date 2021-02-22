@@ -1,0 +1,26 @@
+1. 데이터 전처리가 잘 되었는지 확인하기 위해 result 에 gen 이 test embedding 데이터로 생성한 사진과 실제 사진을 붙여놓고, 저장하는 이미지 수를 10에서 5로 줄이자
+
+    def save_rgb_img(img_gen, img_real, path): --> save_rgb_img 함수를 이렇게 바꿈
+        """
+        Save an rgb image
+        """
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 2, 1)
+        ax.imshow(img_gen)
+        ax.axis("off")
+        ax.set_title("Image_gen")
+
+        ax = fig.add_subplot(1, 2, 2)
+        ax.imshow(img_real)
+        ax.axis("off")
+        ax.set_title("Image_real")
+
+        plt.savefig(path)
+        plt.close()
+        
+     for i in range(5): --> 이미지 저장 반복문을 이렇게 바꿈
+        img_gen = fake_images[i]
+        img_real = X_test[i]
+        save_rgb_img(img_gen, img_real "results/gen_{}_{}.png".format(epoch, i))   
+        
+2. gen Dropout 을 0으로 한다
