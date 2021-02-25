@@ -1,5 +1,5 @@
-1. generator 를 훈련 시킬때, 너무 여러번 훈련시켜서 gen 이 dis 보다 훨씬 뛰어나진듯 보임
- -> 아래 코드 에서 가장 아래 훈련 내용을 지움
+1. gen 이 dis 보다 훨씬 뛰어나진듯 보임
+ -> 아래 코드를 추가 하여 dis 를 더 여러번 훈련 시킴
         
     # 실제 이미지와 압축 텍스트 임베딩을 입력으로 하고 모든 레이블을 1 (이미지가 진짜라는 의미) 로 하여,
     # dis 가 실제 이미지를 잘 분류 하게끔 훈련
@@ -11,5 +11,14 @@
                                               np.reshape(fake_labels, (batch_size, 1)))
     # 실제 이미지와 압축 텍스트 임베딩을 '어긋나게' 입력으로 하고 모든 레이블을 0 (이미지가 가짜라는 의미) 로 하여,
     # dis 가 실제 이미지를 잘 분류 하게끔 훈련
---> dis_loss_wrong = stage1_dis.train_on_batch([image_batch[:(batch_size - 1)], compressed_embedding[1:]],
+    dis_loss_wrong = stage1_dis.train_on_batch([image_batch[:(batch_size - 1)], compressed_embedding[1:]],
                                                np.reshape(fake_labels[1:], (batch_size-1, 1)))
+--> dis_loss_wrong2 = stage1_dis.train_on_batch([image_batch[:(batch_size - 2)], compressed_embedding[2:]],
+                                                   np.reshape(fake_labels[2:], (batch_size-2, 1)))
+                                               
+
+2.  
+    d_loss = 0.5 * np.add(dis_loss_real, 0.5 * np.add(dis_loss_wrong, dis_loss_fake)) 를
+        
+ -> d_loss = 0.5*np.add(dis_loss_wrong2, 0.5 * np.add(dis_loss_real, 0.5 * np.add(dis_loss_wrong, dis_loss_fake)))
+ 
