@@ -1,5 +1,5 @@
 1. 10th 코드에서,
-   cropped 된 이미지를 입력으로 넣으며(2만개, batch_size = 128, CelebA_dataset_reduce_cropped), 
+   cropped 된 이미지를 입력으로 넣으면(2만개, batch_size = 128, CelebA_dataset_reduce_cropped), 
 --> 문제는, OpenCV 코드가 정면이 아닌 사진은 얼굴 검출을 하지 못하기 때문에 _cropped/img_align_celeba/images 폴더 안에 그러한 사진들은 제거 된후 저장
     (원본 데이터는 180978 개로, reduce 데이터는 17829 개로 줄어듬)
     그러므로, 이 데이터들과 파일명, 속성값들을 서로 매칭 시켜 훈련시켜야 함
